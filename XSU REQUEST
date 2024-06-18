@@ -1,0 +1,19 @@
+OracleXML getXML -user "grp2/grp22here" \ 
+-conn "jdbc:oracle:thin:@sit.yorku.ca:1521:studb10g" \
+"select g.GuestID,g.FirstName,c.OrderIDt,c.TotalAmount from Guest_tb g,CustomerOrder_tb c where Deref (c.GuestID).GuestID=g.GuestID"
+
+OracleXML getXML -user "userID/password" \ 
+? -conn "jdbc:oracle:thin:@sit.yorku.ca:1521:grp2" \
+? "select r.ReservationID,r.specification,r.TotalPayment,m.RoomID from Reservation_tb r,Room_tb m where Deref (r.RoomID).RoomID=m.RoomID"
+
+OracleXML getXML -user "userID/password" \ 
+? -conn "jdbc:oracle:thin:@sit.yorku.ca:1521:grp2" \
+? "select r.ReservationID,r.TotalPayment,p.PromotionID,p.DiscountPercentage from Reservation_tb r,Promotion_tb p where Deref (p.ReservationID).ReservationID=r.ReservationID"
+
+OracleXML getXML -user "userID/password" \ 
+? -conn "jdbc:oracle:thin:@sit.yorku.ca:1521:grp2" \
+? "select  r.ReservationID,r.specification,r.NumberofGuest,f.FeedbackID,f.Feedbackcomment from Reservation_tb r,Feedback_tb f where Deref (f.ReservationID).ReservationID=r.ReservationID"
+
+OracleXML getXML -user "userID/password" \ 
+? -conn "jdbc:oracle:thin:@sit.yorku.ca:1521:grp2" \
+? "select b.BillingID,b.TotalAmount,c.OrderIDt,c.TotalAmount from Bill_tb b,CustomerOrder_tb c where Deref (c.BillingID).BillingID=b.BillingID"
