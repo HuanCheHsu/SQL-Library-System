@@ -1,0 +1,114 @@
+—1 xml for PromotionID and Room association
+select xmlelement("Promotion",xmlattributes(p.PromotionID as "Pid"),
+  xmlforest (
+  p.CreditLvl AS "Level",
+  r.Price as "Price"
+  ))as Promotion
+  from
+  promotion_tb p,room_tb r
+  where
+ Deref(p.RoomID).RoomID=r.RoomID
+ and r.RoomID=2;
+
+—2 xml for Reservation and Promotion association
+select xmlelement("Reservation",xmlattributes(r.ReservationID as "RID"),
+  xmlforest (
+  r.NumberOfGuest AS "GuestNumber",p.PromotionID as "Pid",
+  r.ReservationPayment as "Payment"
+  )) as Reservation
+  from
+  Reservation_tb r,Promotion_tb p
+  where
+ Deref(r.PromotionID).PromotionID=p.PromotionID
+ and p.PromotionID=1;
+
+—3 Reservation and Notification Association
+select xmlelement("Reservation",xmlattributes(r.ReservationID as "RID"),
+  xmlforest (
+  n.NotificationID  as "Sid",n.content as "content",n.status as "status"
+  )) as ReservationNotify
+  from
+  Reservation_tb r,Notifcation_tb n
+  where
+ Deref(n.ReservationID).ReservationID=r.ReservationID and r.ReservationID=1;
+
+—4 xml for Reservation and CustomerOrder assoication
+select xmlelement("Reservation",xmlattributes(c.OrderID as "OID"),
+  xmlforest (
+  r.ReservationID as "RID",r.RESERVATIONPAYMENT as "Rpayment",r.SPECIFICATION as "specify"
+  )) as OrderReservation
+  from
+  Reservation_tb r,CustomerOrder_tb c
+  where
+ Deref(c.ReservationID).ReservationID=r.ReservationID
+ and r.ReservationID=1;
+
+—5 xml for Reservation and Promotion Assoication
+select xmlelement("Reservation",xmlattributes(r.ReservationID as "RID"),
+  xmlforest (
+  r.NumberOfGuest AS "GuestNumber",p.PromotionID as "Pid",
+  r.ReservationPayment as "Payment"
+  )) as Reservation
+  from
+  Reservation_tb r,Promotion_tb p
+  where
+ Deref(r.PromotionID).PromotionID=p.PromotionID
+ and p.PromotionID=1;
+
+—6 XML for Resrvation and Feedbakc assoication
+select xmlelement("Reservation",xmlattributes(r.ReservationID as "RID"),
+  xmlforest (
+  f.FeedbackID as "Fid",f.Feedbackcomment as "Comment"
+  )) as Reservation
+  from
+  Reservation_tb r,Feedback_tb f
+  where
+ Deref(f.ReservationID).ReservationID=r.ReservationID
+ and r.ReservationID=1;
+ —7
+select xmlelement("Guest",xmlagg(xmlelement("Order",
+ xmlattributes(g.GuestID AS "GuestID"),
+xmlelement("name",g.FirstName),
+ xmlelement("Order",c.OrderID)))) as GuestOrder
+ from Guest_tb g,CustomerOrder_tb c where deref (c.GuestID).GuestID=g.GuestID and g.GuestID=1;
+
+—8 XML for Promotion and Room Assoication
+ select xmlelement("Promotion",xmlagg(xmlelement("PromotionDetail",
+ xmlattributes(p.PromotionID AS "PID"),
+xmlelement("Descount",p.DiscountPercentage),
+ xmlelement("RoomID",r.RoomID),xmlelement("Price",r.Price)))) as GuestOrder
+ from Promotion_tb p,Room_tb r where deref (p.RoomID).RoomID=r.RoomID and r.RoomID=1 Group by r.RoomID;
+
+--xmlagg 
+—9 XML FOR BILL AND ORDER GROUP BY THE BILLING ID
+ select xmlelement("Bill",xmlagg(xmlelement("Order",
+ xmlattributes(b.BillingID AS "BillingID"),
+xmlelement("PaymentStatus",b.PaymentStatus),
+ xmlelement("Order",c.OrderID)))) as GuestOrder
+ from Bill_tb b,CustomerOrder_tb c where deref (c.BillingID).BillingID=b.BillingID and b.BillingID=1 group by b.BillingID;
+  
+—10 XML FOR RESERVATION AND FEEDBACK GROUP BY RESERVATION ID
+select xmlelement("Reservation",xmlagg(xmlelement("Feedback",
+ xmlattributes(r.ReservationID AS "ReservationID"),
+xmlelement("NumberofGuest",r.NumberofGuest),
+ xmlelement("Feedback",f.FeedbackID)))) as Reservationlist
+ from Reservation_tb r,Feedback_tb f where deref (f.ReservationID).ReservationID=r.ReservationID and r.ReservationID=1 group by r.ReservationID;
+ 
+—11 ROOM AND FACILITY 
+select xmlelement("Room",xmlagg(xmlelement("Facility",
+ xmlattributes(r.RoomID AS "RoomID"),
+xmlelement("Price",r.Price),
+ xmlelement("Bathpool",f.bathpool)))) as roomInfofrom Room_tb r,Facility_tb f where deref (f.RoomID).RoomID=r.RoomID and r.RoomID=1 group by r.RoomID;
+
+—12 ROOM AND ROOMSERVICE
+select xmlelement("Room",xmlagg(xmlelement("RoomService",
+ xmlattributes(r.RoomID AS "RoomID"),
+xmlelement("Status",r.Status),
+ xmlelement("ServiceName",s.ServiceName)))) as ServiceInfo
+ from Room_tb r,Room_Service_tb s where deref (s.RoomID).RoomID=r.RoomID and r.RoomID=1 group by r.RoomID;
+
+ —13 XML RESERVATION AND ROOMSERVICE
+select xmlelement("Reservation",xmlagg(xmlelement("RoomService",
+ xmlattributes(p.ReservationID AS "ReservationID"),
+xmlelement("CheckInDate",p.CheckInDate),
+ xmlelement("ServiceName",o.ServiceName)))) as roomInforom Reservation_tb p,Room_Service_tb o where deref (o.ReservationID).ReservationID=p.ReservationID and p.ReservationID=1;
