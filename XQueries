@@ -1,0 +1,111 @@
+xquery
+--1
+    let $c:= doc('/public/Grp2M3/XmlOrder.xml')
+    for $d in $c/Orders/Order
+    where $d/TOTALAMOUNT > '500.0'
+    return $d/CID/text()
+    /
+
+--2
+ let $c:= doc('/public/Grp2M3/XmlOrder.xml')
+    for $d in $c/Orders/Order
+    let $g:= doc('/public/Grp2M3/XmlGuest.xml')
+    for $b in $g/Guests/Guest
+    where $d/TOTALAMOUNT>'300.0' and $d/GUESTID = $b/GUESTID
+    return $b/FIRSTNAME/text()
+    /
+--3
+ let $c:= doc('/public/Grp2M3/XmlOrder.xml')
+    for $d in $c/Orders/Order
+    let $g:= doc('/public/Grp2M3/XmlGuest.xml')
+    for $b in $g/Guests/Guest
+    where $d/CID = '1' and $d/GUESTID = $b/GUESTID
+    return $b/FIRSTNAME
+    /
+--4
+ let $c:= doc('/public/Grp2M3/XmlOrder.xml')
+    for $d in $c/Orders/Order
+    let $g:= doc('/public/Grp2M3/XmlGuest.xml')
+    for $b in $g/Guests/Guest
+    where $d/BILLINGID = '2' and $d/GUESTID = $b/GUESTID
+    return $b/EMAIL
+    /
+--5
+    let $c:= doc('/public/Grp2M3/XmlOrder.xml')
+    for $d in $c/Orders/Order
+    where $d/TOTALAMOUNT < '500.0'
+    return $d/CID/text()
+    /
+--XML with Tag Attributes
+--6
+let $c:= doc('/public/Grp2M3/XmlOrder.xml')
+    for $d in $c/Orders/Order
+    let $g:= doc('/public/Grp2M3/XmlBill.xml')
+    for $b in $g/Bills/Bill
+    where $d/TOTALAMOUNT<'500.0' and $b/@BID = $d/BILLID
+    return $b/TotalAmount
+    /
+--7
+let $c:= doc('/public/Grp2M3/XmlOrder.xml')
+    for $d in $c/Orders/Order
+    let $g:= doc('/public/Grp2M3/XmlReservation.xml')
+    for $b in $g/Reservations/Reservation
+    where $d/TOTALAMOUNT>'300.0' and $b/RID = $d/RESERVATIONID
+    return $b/Room/@RoomID
+    /
+--8
+    let $c:= doc('/public/Grp2M3/XmlOrder.xml')
+    for $d in $c/Orders/Order
+    let $g:= doc('/public/Grp2M3/XmlGuest.xml')
+    for $b in $g/Guests/Guest
+    where $d/TOTALAMOUNT>'300.0' and $b/@GID = $d/GUESTID
+    return $b/TotalAmount
+    /
+
+--9
+    let $c:= doc('/public/Grp2M3/XmlReservation.xml')
+    for $r in $c/Reservations/Reservation
+    let $g:= doc('/public/Grp2M3/XmlRoom.xml')
+    for $m in $g/Rooms/Room
+    where $r/RESERVATIONPAYMENT < '300.0' and $r/Room/@RoomID = $m/ROOMID
+	return $r/ROOMID 
+    /
+--10
+    let $c:= doc('/public/Grp2M3/XmlOrder.xml')
+    for $d in $c/Orders/Order
+    let $g:= doc('/public/Grp2M3/XmlGuest.xml')
+    for $b in $g/Guests/Guest
+    where $d/TOTALAMOUNT>'300.0' and $b/@GID = $d/GUESTID
+    return $b/BILLINGID
+    /
+--XML WITH Element
+--11
+let $c:= doc('/public/Grp2M3/XmlGuest.xml')
+    for $g in $c/Guests/Guest
+	where $g/FirstName = 'John'
+    return element Order {attribute OrderID {$g/FirstName/text()},element BillID{$g/BILLINGID/text()}}
+   /
+--12
+let $c:= doc('/public/Grp2M3/XmlOrder.xml')
+    for $d in $c/Orders/Order
+	where $d/OrderSTATUS = 'S'
+    return element Order {attribute OrderID {$d/CID/text()},element BillID{$d/BILLINGID/text()}}
+   /
+--13
+ let $c:= doc('/public/Grp2M3/XmlOrder.xml')
+    for $d in $c/Orders/Order
+	where $d/CID = '2'
+    return element Order {attribute OrderID {$d/CID/text()},element GuestID{$d/GUESTID/text()}}
+   /
+--14
+  let $c:= doc('/public/Grp2M3/XmlRoom.xml')
+    for $d in $c/Rooms/Room
+	where $d/CID = '3'
+    return element Room {attribute RoomID {$d/RoomID/text()},element ServiceID{$d/SERVICEID/text()}}
+   /
+--15
+let $c:= doc('/public/Grp2M3/XmlOrder.xml')
+    for $d in $c/Orders/Order
+	where $d/CID = '4'
+    return element Order {attribute OrderID {$d/CID/text()},element ReservationID{$d/RESERVATIONID/text()}}
+   /
